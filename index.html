@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="حاسبة تقسيم فواتير الكهرباء للعقارات المؤجرة">
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="تقسيم الكهرباء">
+
+    <title>تقسيم الكهرباء</title>
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-bg">
+        <div class="grid-overlay"></div>
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+
+    <!-- App Shell -->
+    <div class="app-shell">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">تقسيم الكهرباء</span>
+                    <span class="logo-subtitle">مدير الفواتير</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" id="history-toggle" title="السجل">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                </button>
+                <button class="icon-btn" id="settings-toggle" title="الإعدادات">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Flow Navigation -->
+            <nav class="flow-nav">
+                <button class="flow-step active" data-step="tenants">
+                    <span class="step-number">1</span>
+                    <span class="step-label">المستأجرون</span>
+                </button>
+                <div class="flow-connector"></div>
+                <button class="flow-step" data-step="bills">
+                    <span class="step-number">2</span>
+                    <span class="step-label">الفواتير</span>
+                </button>
+                <div class="flow-connector"></div>
+                <button class="flow-step" data-step="readings">
+                    <span class="step-number">3</span>
+                    <span class="step-label">القراءات</span>
+                </button>
+            </nav>
+
+            <!-- Step Content Container -->
+            <div class="step-container">
+                <!-- Step 1: Tenants -->
+                <section id="tenants-step" class="step-content active">
+                    <div class="step-header">
+                        <div class="step-title-group">
+                            <h2 class="step-title">المستأجرين</h2>
+                            <p class="step-description">أضف المستأجرين الذين ستقسم معهم الفواتير</p>
+                        </div>
+                        <button id="add-tenant-btn" class="action-btn primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            إضافة مستأجر
+                        </button>
+                    </div>
+
+                    <div id="tenants-list" class="tenants-grid">
+                        <!-- Tenants rendered here -->
+                    </div>
+
+                    <div class="step-footer">
+                        <button class="nav-btn next" data-goto="bills">
+                            متابعة إلى الفواتير
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                <polyline points="12,5 19,12 12,19"/>
+                            </svg>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Step 2: Bills (Universal/Building Bills) -->
+                <section id="bills-step" class="step-content">
+                    <div class="step-header">
+                        <div class="step-title-group">
+                            <h2 class="step-title">إضافة فاتورة المبنى</h2>
+                            <p class="step-description">أدخل فاتورة المرافق للمبنى من مزود الخدمة</p>
+                        </div>
+                    </div>
+
+                    <!-- Universal Reading Card -->
+                    <div class="reading-card universal">
+                        <div class="card-badge">إجمالي المبنى</div>
+                        <form id="universal-reading-form" class="reading-form">
+                            <div class="form-field month-field">
+                                <label for="reading-month">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                        <line x1="16" y1="2" x2="16" y2="6"/>
+                                        <line x1="8" y1="2" x2="8" y2="6"/>
+                                        <line x1="3" y1="10" x2="21" y2="10"/>
+                                    </svg>
+                                    شهر الفاتورة
+                                </label>
+                                <input type="month" id="reading-month" name="month" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-field">
+                                    <label for="universal-reading">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                        </svg>
+                                        قراءة العداد
+                                    </label>
+                                    <div class="input-with-unit">
+                                        <input type="number" id="universal-reading" name="reading" required placeholder="0.00" step="0.01">
+                                        <span class="unit">وحدة</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-field">
+                                    <label for="total-cost">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <line x1="12" y1="1" x2="12" y2="23"/>
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                        </svg>
+                                        إجمالي الفاتورة
+                                    </label>
+                                    <div class="input-with-unit currency">
+                                        <span class="unit">ر.ع.</span>
+                                        <input type="number" id="total-cost" name="cost" required placeholder="0.000" step="0.001">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="previous-reading-info" class="info-banner hidden">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="16" x2="12" y2="12"/>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                </svg>
+                                <span id="previous-reading-text"></span>
+                            </div>
+
+                            <button type="submit" class="action-btn primary full-width">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17,21 17,13 7,13 7,21"/>
+                                    <polyline points="7,3 7,8 15,8"/>
+                                </svg>
+                                حفظ فاتورة المبنى
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Existing Bills List -->
+                    <div class="reading-card">
+                        <div class="card-badge">الفواتير المحفوظة</div>
+                        <div id="bills-list-overview" class="bills-overview">
+                            <!-- Bills list rendered here -->
+                        </div>
+                    </div>
+
+                    <div class="step-footer">
+                        <button class="nav-btn prev" data-goto="tenants">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"/>
+                                <polyline points="12,19 5,12 12,5"/>
+                            </svg>
+                            رجوع
+                        </button>
+                        <button class="nav-btn next" data-goto="readings">
+                            إضافة القراءات
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                                <polyline points="12,5 19,12 12,19"/>
+                            </svg>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Step 3: Readings (Tenant Readings + Calculation + PDF) -->
+                <section id="readings-step" class="step-content">
+                    <div class="step-header">
+                        <div class="step-title-group">
+                            <h2 class="step-title">تسجيل قراءات المستأجرين</h2>
+                            <p class="step-description">اختر فترة الفاتورة وأدخل قراءات العداد الفردية</p>
+                        </div>
+                    </div>
+
+                    <!-- Bill Period Selector -->
+                    <div class="period-selector">
+                        <label for="reading-bill-select">اختر فترة الفاتورة</label>
+                        <div class="select-wrapper">
+                            <select id="reading-bill-select">
+                                <option value="">اختر فاتورة...</option>
+                            </select>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Selected Bill Info -->
+                    <div id="selected-bill-info" class="reading-card universal hidden">
+                        <div class="card-badge">الفاتورة المختارة</div>
+                        <div class="selected-bill-details">
+                            <div class="bill-detail-row">
+                                <span class="detail-label">الفترة</span>
+                                <span id="selected-bill-period" class="detail-value"></span>
+                            </div>
+                            <div class="bill-detail-row">
+                                <span class="detail-label">التكلفة الإجمالية</span>
+                                <span id="selected-bill-cost" class="detail-value"></span>
+                            </div>
+                            <div class="bill-detail-row">
+                                <span class="detail-label">قراءة العداد</span>
+                                <span id="selected-bill-reading" class="detail-value"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tenant Readings - Waiting State -->
+                    <div id="tenant-readings-waiting" class="reading-card tenant-readings waiting">
+                        <div class="card-badge">قراءات المستأجرين</div>
+                        <div class="waiting-state">
+                            <div class="waiting-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
+                            </div>
+                            <h4>قراءات المستأجرين الفردية</h4>
+                            <p>اختر فترة الفاتورة أعلاه لإدخال قراءة عداد كل مستأجر.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tenant Readings - Active State -->
+                    <div id="tenant-readings-section" class="reading-card tenant-readings hidden">
+                        <div class="card-badge">القراءات الفردية</div>
+                        <p class="card-intro">أدخل قراءة عداد كل مستأجر</p>
+
+                        <div id="tenant-readings-list" class="tenant-inputs">
+                            <!-- Tenant inputs rendered here -->
+                        </div>
+
+                        <button id="save-tenant-readings-btn" class="action-btn accent full-width">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9,11 12,14 22,4"/>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                            حساب الفواتير
+                        </button>
+                    </div>
+
+                    <!-- Calculated Bills Summary -->
+                    <div id="bills-summary" class="bills-container hidden">
+                        <div class="card-badge">الفواتير المحسوبة</div>
+                        <div id="bills-list" class="bills-grid">
+                            <!-- Bills rendered here -->
+                        </div>
+
+                        <div class="bills-actions">
+                            <button id="generate-all-pdfs-btn" class="action-btn primary">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7,10 12,15 17,10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                تحميل جميع الفواتير PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="step-footer">
+                        <button class="nav-btn prev" data-goto="bills">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"/>
+                                <polyline points="12,19 5,12 12,5"/>
+                            </svg>
+                            رجوع إلى الفواتير
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- History Drawer -->
+    <div id="history-drawer" class="drawer hidden">
+        <div class="drawer-backdrop"></div>
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <h3>سجل القراءات</h3>
+                <button class="drawer-close" id="close-history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div id="history-list" class="history-list">
+                <!-- History rendered here -->
+            </div>
+            <div class="drawer-footer">
+                <button id="export-data-btn" class="action-btn secondary full-width">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17,8 12,3 7,8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    تصدير جميع البيانات
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tenant Modal -->
+    <div id="tenant-modal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="tenant-modal-title">إضافة مستأجر</h3>
+                <button class="modal-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="tenant-form" class="modal-form">
+                <input type="hidden" id="tenant-id" name="id">
+                <div class="form-field">
+                    <label for="tenant-name">الاسم</label>
+                    <input type="text" id="tenant-name" name="name" required placeholder="محمد أحمد">
+                </div>
+                <div class="form-field">
+                    <label for="tenant-room">الغرفة / الوحدة</label>
+                    <input type="text" id="tenant-room" name="roomNumber" required placeholder="أ، 101، الخ.">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="action-btn secondary" id="cancel-tenant-btn">إلغاء</button>
+                    <button type="submit" class="action-btn primary">حفظ المستأجر</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="loader">
+            <div class="loader-bolt">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+            </div>
+            <span>جاري المعالجة...</span>
+        </div>
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div id="install-prompt" class="install-prompt hidden">
+        <div class="install-content">
+            <div class="install-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7,10 12,15 17,10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+            </div>
+            <div class="install-text">
+                <strong>تثبيت تقسيم الكهرباء</strong>
+                <span>استخدم بدون إنترنت في أي وقت</span>
+            </div>
+            <button id="install-btn" class="action-btn accent small">تثبيت</button>
+            <button id="dismiss-install-btn" class="icon-btn small">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- External Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- App Scripts -->
+    <script src="js/db.js"></script>
+    <script src="js/calculations.js"></script>
+    <script src="js/pdf-generator.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
