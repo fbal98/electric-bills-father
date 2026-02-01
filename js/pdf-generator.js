@@ -2,6 +2,16 @@
 
 const PDFGenerator = {
     /**
+     * Ensure Arabic font is loaded before generating PDF
+     * @returns {Promise<void>}
+     */
+    async ensureFontLoaded() {
+        if (window.FontLoader && !FontLoader.isLoaded()) {
+            await FontLoader.loadFont();
+        }
+    },
+
+    /**
      * Generate PDF bill for a single tenant
      * @param {object} billData - Bill data including tenant, reading, and calculation info
      * @returns {jsPDF} PDF document object
@@ -9,6 +19,11 @@ const PDFGenerator = {
     generateBill(billData) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
+
+        // Apply Arabic font if available
+        if (window.FontLoader && FontLoader.isLoaded()) {
+            FontLoader.applyArabicFont(doc);
+        }
 
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
@@ -20,7 +35,10 @@ const PDFGenerator = {
 
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(24);
-        doc.setFont(undefined, 'bold');
+        // Use Amiri font for Arabic text (bold not available, use normal)
+        if (window.FontLoader && FontLoader.isLoaded()) {
+            doc.setFont('Amiri', 'normal');
+        }
         doc.text('فاتورة الكهرباء', pageWidth / 2, 25, { align: 'center' });
 
         // Reset text color
@@ -29,7 +47,6 @@ const PDFGenerator = {
 
         // Billing Period
         doc.setFontSize(12);
-        doc.setFont(undefined, 'normal');
         doc.text(`فترة الفاتورة: ${Calculations.formatMonthYear(billData.date)}`, pageWidth - 20, yPos, { align: 'right' });
         yPos += 10;
 
@@ -41,12 +58,10 @@ const PDFGenerator = {
 
         // Tenant Information Section
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
         doc.text('معلومات المستأجر', pageWidth - 20, yPos, { align: 'right' });
         yPos += 8;
 
         doc.setFontSize(11);
-        doc.setFont(undefined, 'normal');
         doc.text(`الاسم: ${billData.tenantName}`, pageWidth - 20, yPos, { align: 'right' });
         yPos += 7;
         doc.text(`الغرفة: ${billData.roomNumber}`, pageWidth - 20, yPos, { align: 'right' });
@@ -54,7 +69,6 @@ const PDFGenerator = {
 
         // Meter Reading Section
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
         doc.text('قراءة العداد', pageWidth - 20, yPos, { align: 'right' });
         yPos += 10;
 
@@ -70,7 +84,6 @@ const PDFGenerator = {
 
         // Cost Calculation Section
         doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
         doc.text('حساب التكلفة', pageWidth - 20, yPos, { align: 'right' });
         yPos += 10;
 
@@ -79,8 +92,8 @@ const PDFGenerator = {
             ['استهلاكك', `${billData.unitsConsumed.toFixed(2)} وحدة`],
             ['حصتك', `${Calculations.formatPercentage(billData.proportion)}`],
             ['', ''],
-            ['إجمالي فاتورة المبنى', `${Calculations.formatCurrency(billData.totalBillCost)}`],
-            ['التكلفة لكل وحدة', `${Calculations.formatCurrency(billData.costPerUnit)}`]
+            ['إجمالي فاتورة المبنى', Calculations.formatCurrencyForPDF(billData.totalBillCost)],
+            ['التكلفة لكل وحدة', Calculations.formatCurrencyForPDF(billData.costPerUnit)]
         ];
 
         this.drawTable(doc, 20, yPos, pageWidth - 40, costData);
@@ -91,17 +104,15 @@ const PDFGenerator = {
         doc.rect(15, yPos - 5, pageWidth - 30, 20, 'F');
 
         doc.setFontSize(16);
-        doc.setFont(undefined, 'bold');
         doc.text('المبلغ المستحق:', pageWidth - 20, yPos + 7, { align: 'right' });
         doc.setTextColor(33, 150, 243);
-        doc.text(Calculations.formatCurrency(billData.proportionalCost), 20, yPos + 7, { align: 'left' });
+        doc.text(Calculations.formatCurrencyForPDF(billData.proportionalCost), 20, yPos + 7, { align: 'left' });
         doc.setTextColor(0, 0, 0);
 
         yPos += 30;
 
         // Footer
         doc.setFontSize(9);
-        doc.setFont(undefined, 'italic');
         doc.setTextColor(128, 128, 128);
         const footerText = 'تم حساب هذه الفاتورة بناءً على الاستهلاك النسبي.';
         doc.text(footerText, pageWidth / 2, pageHeight - 20, { align: 'center' });
@@ -110,17 +121,17 @@ const PDFGenerator = {
     },
 
     /**
-     * Draw a simple table
+     * Draw a simple RTL table (Arabic labels on right, values on left)
      * @param {jsPDF} doc - jsPDF document
      * @param {number} x - X position
      * @param {number} y - Y position
      * @param {number} width - Table width
-     * @param {Array} data - 2D array of table data
+     * @param {Array} data - 2D array of table data [label, value]
      */
     drawTable(doc, x, y, width, data) {
         const rowHeight = 10;
-        const col1Width = width * 0.6;
-        const col2Width = width * 0.4;
+        const valueColWidth = width * 0.4;
+        const labelColWidth = width * 0.6;
 
         doc.setFontSize(10);
 
@@ -133,14 +144,14 @@ const PDFGenerator = {
                 doc.rect(x, currentY - 6, width, rowHeight, 'F');
             }
 
-            // Draw cell content
+            // RTL layout: Label on right, value on left
             if (row[0]) {
-                doc.setFont(undefined, 'normal');
-                doc.text(row[0], x + 5, currentY);
+                // Arabic label - aligned right
+                doc.text(row[0], x + width - 5, currentY, { align: 'right' });
             }
             if (row[1]) {
-                doc.setFont(undefined, 'bold');
-                doc.text(row[1], x + col1Width + 5, currentY);
+                // Value - aligned left in left column
+                doc.text(row[1], x + 5, currentY, { align: 'left' });
             }
         });
 
@@ -167,6 +178,8 @@ const PDFGenerator = {
     async downloadBill(billData) {
         try {
             UI.showLoading();
+            // Ensure Arabic font is loaded before generating PDF
+            await this.ensureFontLoaded();
             const doc = this.generateBill(billData);
             const filename = this.generateFilename(
                 billData.tenantName,
@@ -189,6 +202,8 @@ const PDFGenerator = {
     async downloadAllBills(billsData) {
         try {
             UI.showLoading();
+            // Ensure Arabic font is loaded before generating PDFs
+            await this.ensureFontLoaded();
 
             for (const billData of billsData) {
                 const doc = this.generateBill(billData);

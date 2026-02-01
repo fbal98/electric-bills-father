@@ -61,6 +61,16 @@ const Calculations = {
     },
 
     /**
+     * Format currency value for PDF (removes RTL marks that cause display issues)
+     * @param {number} amount - Amount to format
+     * @returns {string} Formatted currency string safe for PDF
+     */
+    formatCurrencyForPDF(amount) {
+        const formatted = amount.toFixed(3);
+        return `${formatted} ر.ع.`;
+    },
+
+    /**
      * Format number with decimals
      * @param {number} value - Value to format
      * @param {number} decimals - Number of decimal places
