@@ -1,35 +1,35 @@
 /* ================================================
    POWER SPLIT - Electric Bill Manager
-   Warm Industrial Aesthetic
+   Clean Light Theme
    ================================================ */
 
 /* CSS Custom Properties */
 :root {
-    /* Core Palette - Warm Industrial */
-    --bg-deep: #0d0d0d;
-    --bg-primary: #141414;
-    --bg-secondary: #1a1a1a;
-    --bg-elevated: #222222;
-    --bg-card: #1e1e1e;
+    /* Core Palette - Light Theme */
+    --bg-deep: #ffffff;
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #f1f3f4;
+    --bg-elevated: #ffffff;
+    --bg-card: #ffffff;
 
     /* Accent Colors */
-    --accent-primary: #f5a623;
-    --accent-primary-glow: rgba(245, 166, 35, 0.3);
-    --accent-secondary: #e8976b;
-    --accent-success: #7ec699;
-    --accent-danger: #e57373;
-    --accent-info: #81b4d8;
+    --accent-primary: #2563eb;
+    --accent-primary-glow: rgba(37, 99, 235, 0.15);
+    --accent-secondary: #3b82f6;
+    --accent-success: #22c55e;
+    --accent-danger: #ef4444;
+    --accent-info: #0ea5e9;
 
     /* Text Colors */
-    --text-primary: #f5f5f5;
-    --text-secondary: #a0a0a0;
-    --text-muted: #666666;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
     --text-accent: var(--accent-primary);
 
     /* Borders & Lines */
-    --border-subtle: rgba(255, 255, 255, 0.06);
-    --border-default: rgba(255, 255, 255, 0.1);
-    --border-accent: rgba(245, 166, 35, 0.3);
+    --border-subtle: rgba(0, 0, 0, 0.06);
+    --border-default: rgba(0, 0, 0, 0.1);
+    --border-accent: rgba(37, 99, 235, 0.3);
 
     /* Spacing Scale */
     --space-xs: 0.25rem;
@@ -45,10 +45,10 @@
     --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
     /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 40px var(--accent-primary-glow);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-glow: 0 0 20px var(--accent-primary-glow);
 
     /* Transitions */
     --transition-fast: 150ms ease;
@@ -87,14 +87,10 @@ body {
 }
 
 /* ================================================
-   Ambient Background
+   Ambient Background (hidden for light theme)
    ================================================ */
 .ambient-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
+    display: none;
 }
 
 .grid-overlay {
@@ -156,9 +152,9 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: var(--space-md) var(--space-lg);
-    background: rgba(20, 20, 20, 0.8);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-default);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -176,9 +172,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    background: var(--accent-primary);
     border-radius: var(--radius-sm);
-    color: var(--bg-deep);
+    color: #ffffff;
 }
 
 .logo-icon svg {
@@ -304,7 +300,7 @@ body {
 
 .flow-step.active .step-number {
     background: var(--accent-primary);
-    color: var(--bg-deep);
+    color: #ffffff;
 }
 
 .step-number {
@@ -430,11 +426,11 @@ body {
 
 .action-btn.primary {
     background: var(--accent-primary);
-    color: var(--bg-deep);
+    color: #ffffff;
 }
 
 .action-btn.primary:hover {
-    background: #ffb93d;
+    background: #1d4ed8;
     box-shadow: var(--shadow-glow);
 }
 
@@ -454,8 +450,8 @@ body {
 }
 
 .action-btn.accent {
-    background: linear-gradient(135deg, var(--accent-success), #5ba87a);
-    color: var(--bg-deep);
+    background: var(--accent-success);
+    color: #ffffff;
 }
 
 .action-btn.accent:hover {
@@ -1084,7 +1080,7 @@ body {
 .drawer-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(4px);
     animation: fadeIn 0.3s ease;
 }
@@ -1224,7 +1220,7 @@ body {
 .modal-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
     animation: fadeIn 0.3s ease;
 }
@@ -1410,7 +1406,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(13, 13, 13, 0.9);
+    background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(8px);
 }
 
