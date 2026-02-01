@@ -1,15 +1,15 @@
-const CACHE_NAME = 'power-split-v6';
+const CACHE_NAME = 'power-split-v7';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/app.js',
-  '/js/db.js',
-  '/js/calculations.js',
-  '/js/pdf-generator.js',
-  '/js/ui.js',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
+  './',
+  './index.html',
+  './css/style.css',
+  './js/app.js',
+  './js/db.js',
+  './js/calculations.js',
+  './js/pdf-generator.js',
+  './js/ui.js',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   'https://cdn.jsdelivr.net/npm/idb@8/build/umd.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
 ];
@@ -95,7 +95,7 @@ self.addEventListener('fetch', (event) => {
           return response;
         }).catch(() => {
           // Return offline page or cached version
-          return caches.match('/index.html');
+          return caches.match('./index.html');
         });
       })
   );

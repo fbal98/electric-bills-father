@@ -55,26 +55,12 @@ const App = {
     setupPWAInstall() {
         let deferredPrompt;
 
-        // Detect iOS
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
                            window.navigator.standalone === true;
 
         // Don't show prompt if already installed
         if (isStandalone) {
             return;
-        }
-
-        // iOS-specific install prompt
-        if (isIOS) {
-            // Show iOS install instructions after a short delay
-            setTimeout(() => {
-                document.getElementById('install-prompt').classList.remove('hidden');
-                // Update button to show instructions instead
-                const installBtn = document.getElementById('install-btn');
-                installBtn.textContent = 'كيفية التثبيت';
-                installBtn.onclick = () => this.showIOSInstallModal();
-            }, 3000);
         }
 
         // Chrome/Edge install prompt
@@ -100,56 +86,6 @@ const App = {
         document.getElementById('dismiss-install-btn').addEventListener('click', () => {
             document.getElementById('install-prompt').classList.add('hidden');
         });
-    },
-
-    showIOSInstallModal() {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-backdrop"></div>
-            <div class="modal-content ios-install-modal">
-                <div class="modal-header">
-                    <h3>تثبيت تقسيم الكهرباء</h3>
-                    <button class="modal-close" onclick="this.closest('.modal').remove()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="install-steps">
-                        <div class="install-step">
-                            <div class="step-number">1</div>
-                            <div class="step-content">
-                                <h4>اضغط على زر المشاركة</h4>
-                                <p>ابحث عن <svg style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;" viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg> في أسفل Safari</p>
-                            </div>
-                        </div>
-                        <div class="install-step">
-                            <div class="step-number">2</div>
-                            <div class="step-content">
-                                <h4>اختر "إضافة إلى الشاشة الرئيسية"</h4>
-                                <p>مرر في القائمة واضغط على هذا الخيار</p>
-                            </div>
-                        </div>
-                        <div class="install-step">
-                            <div class="step-number">3</div>
-                            <div class="step-content">
-                                <h4>اضغط "إضافة"</h4>
-                                <p>سيظهر التطبيق على شاشتك الرئيسية مثل التطبيقات الأصلية!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-actions">
-                    <button class="action-btn primary full-width" onclick="this.closest('.modal').remove()">فهمت!</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        // Remove hidden class to show modal
-        setTimeout(() => modal.classList.remove('hidden'), 10);
     },
 
     /**

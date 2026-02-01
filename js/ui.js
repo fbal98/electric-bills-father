@@ -137,7 +137,7 @@ const UI = {
         }
 
         container.innerHTML = tenants.map(tenant => `
-            <div class="tenant-card ${tenant.isActive ? '' : 'inactive'}">
+            <div class="tenant-card ${tenant.isActive ? '' : 'inactive'}" data-tenant-id="${tenant.id}">
                 <div class="tenant-info">
                     <div class="tenant-avatar">${this.getInitials(tenant.name)}</div>
                     <div class="tenant-details">
@@ -146,13 +146,13 @@ const UI = {
                     </div>
                 </div>
                 <div class="tenant-actions">
-                    <button class="tenant-action-btn" onclick="App.editTenant(${tenant.id})" title="تعديل">
+                    <button class="tenant-action-btn edit-tenant-btn" data-tenant-id="${tenant.id}" title="تعديل">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
                     </button>
-                    <button class="tenant-action-btn" onclick="App.toggleTenantActive(${tenant.id})" title="${tenant.isActive ? 'إلغاء التفعيل' : 'تفعيل'}">
+                    <button class="tenant-action-btn toggle-tenant-btn" data-tenant-id="${tenant.id}" title="${tenant.isActive ? 'إلغاء التفعيل' : 'تفعيل'}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             ${tenant.isActive
                                 ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'
@@ -160,7 +160,7 @@ const UI = {
                             }
                         </svg>
                     </button>
-                    <button class="tenant-action-btn danger" onclick="App.deleteTenant(${tenant.id})" title="حذف">
+                    <button class="tenant-action-btn delete-tenant-btn danger" data-tenant-id="${tenant.id}" title="حذف">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="3,6 5,6 21,6"/>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
@@ -171,6 +171,9 @@ const UI = {
                 </div>
             </div>
         `).join('');
+
+        // Use event delegation to handle button clicks
+        this.attachTenantCardEventListeners();
     },
 
     /**
@@ -392,6 +395,41 @@ const UI = {
                     </option>
                 `;
             }).join('');
+    },
+
+    /**
+     * Attach event listeners to tenant cards using event delegation
+     */
+    attachTenantCardEventListeners() {
+        const container = document.getElementById('tenants-list');
+
+        // Remove old listeners if any
+        const newContainer = container.cloneNode(true);
+        container.parentNode.replaceChild(newContainer, container);
+
+        // Add event delegation for all tenant action buttons
+        newContainer.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.edit-tenant-btn');
+            const toggleBtn = e.target.closest('.toggle-tenant-btn');
+            const deleteBtn = e.target.closest('.delete-tenant-btn');
+
+            if (editBtn) {
+                const tenantId = parseInt(editBtn.dataset.tenantId);
+                if (window.App && window.App.editTenant) {
+                    window.App.editTenant(tenantId);
+                }
+            } else if (toggleBtn) {
+                const tenantId = parseInt(toggleBtn.dataset.tenantId);
+                if (window.App && window.App.toggleTenantActive) {
+                    window.App.toggleTenantActive(tenantId);
+                }
+            } else if (deleteBtn) {
+                const tenantId = parseInt(deleteBtn.dataset.tenantId);
+                if (window.App && window.App.deleteTenant) {
+                    window.App.deleteTenant(tenantId);
+                }
+            }
+        });
     },
 
     /**
