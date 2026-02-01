@@ -1,4 +1,4 @@
-const CACHE_NAME = 'power-split-v7';
+const CACHE_NAME = 'power-split-v8';
 const urlsToCache = [
   './',
   './index.html',
@@ -67,6 +67,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // For JavaScript and HTML files: Network-first, then cache (ensures updates are fetched)
+  if (event.request.url.endsWith('.js') ||
+      event.request.url.endsWith('.html') ||
+      event.request.url.includes('/js/')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Cache the new version
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          // If network fails, fall back to cache
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // For everything else: Cache-first (CSS, images, etc.)
   event.respondWith(
     caches.match(event.request)
       .then((response) => {

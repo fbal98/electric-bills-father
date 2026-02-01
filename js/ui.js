@@ -403,33 +403,34 @@ const UI = {
     attachTenantCardEventListeners() {
         const container = document.getElementById('tenants-list');
 
-        // Remove old listeners if any
-        const newContainer = container.cloneNode(true);
-        container.parentNode.replaceChild(newContainer, container);
+        // Only attach the listener once by checking if we've already done so
+        if (!container.dataset.listenerAttached) {
+            container.dataset.listenerAttached = 'true';
 
-        // Add event delegation for all tenant action buttons
-        newContainer.addEventListener('click', (e) => {
-            const editBtn = e.target.closest('.edit-tenant-btn');
-            const toggleBtn = e.target.closest('.toggle-tenant-btn');
-            const deleteBtn = e.target.closest('.delete-tenant-btn');
+            // Add event delegation for all tenant action buttons
+            container.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-tenant-btn');
+                const toggleBtn = e.target.closest('.toggle-tenant-btn');
+                const deleteBtn = e.target.closest('.delete-tenant-btn');
 
-            if (editBtn) {
-                const tenantId = parseInt(editBtn.dataset.tenantId);
-                if (window.App && window.App.editTenant) {
-                    window.App.editTenant(tenantId);
+                if (editBtn) {
+                    const tenantId = parseInt(editBtn.dataset.tenantId);
+                    if (window.App && window.App.editTenant) {
+                        window.App.editTenant(tenantId);
+                    }
+                } else if (toggleBtn) {
+                    const tenantId = parseInt(toggleBtn.dataset.tenantId);
+                    if (window.App && window.App.toggleTenantActive) {
+                        window.App.toggleTenantActive(tenantId);
+                    }
+                } else if (deleteBtn) {
+                    const tenantId = parseInt(deleteBtn.dataset.tenantId);
+                    if (window.App && window.App.deleteTenant) {
+                        window.App.deleteTenant(tenantId);
+                    }
                 }
-            } else if (toggleBtn) {
-                const tenantId = parseInt(toggleBtn.dataset.tenantId);
-                if (window.App && window.App.toggleTenantActive) {
-                    window.App.toggleTenantActive(tenantId);
-                }
-            } else if (deleteBtn) {
-                const tenantId = parseInt(deleteBtn.dataset.tenantId);
-                if (window.App && window.App.deleteTenant) {
-                    window.App.deleteTenant(tenantId);
-                }
-            }
-        });
+            });
+        }
     },
 
     /**

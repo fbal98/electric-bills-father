@@ -42,6 +42,24 @@ const App = {
             navigator.serviceWorker.register('./sw.js')
                 .then(registration => {
                     console.log('Service Worker registered:', registration);
+
+                    // Check for updates periodically
+                    setInterval(() => {
+                        registration.update();
+                    }, 60000); // Check every minute
+
+                    // Listen for service worker updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+                                // New service worker activated, show update notification
+                                if (confirm('تحديث جديد متاح! هل تريد إعادة تحميل التطبيق؟')) {
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
                 })
                 .catch(error => {
                     console.error('Service Worker registration failed:', error);
